@@ -7,6 +7,7 @@ TAG=$2
 SERVICE_NAME=$3
 MACHINE_NAME=${4:-self}
 
+info "compose dir [$COMPOSE_PRJ_DIR] ."
 # IMAGE="registry-vpc.cn-shenzhen.aliyuncs.com/dsdiot/image-recognition"
 
 err() {

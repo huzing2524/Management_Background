@@ -788,8 +788,14 @@ class ExamineId(APIView):
 
         if state == 3:
             now = int(time.time())
-            cur.execute("select name from bg_examine where id = '%s';" % Id)
-            name = cur.fetchone()[0] or ''
+            cur.execute("select t1.name, t1.contact, t1.industry, t2.name, t1.region from bg_examine t1 left join "
+                        "user_info t2 on t1.contact = t2.phone where id = '%s';" % Id)
+            factory_info = cur.fetchone()
+            name = factory_info[0] or ''
+            phone = factory_info[1] or ''
+            industry = factory_info[2] or ''
+            contacts = factory_info[3] or ''
+            region = factory_info[4] or ''
 
             uuid = generate_uuid()  # 'q66bGqqcTHxQs8KnY6'
             admins = '{' + Id + '}'
@@ -801,6 +807,10 @@ class ExamineId(APIView):
                             ";".format(uuid=uuid, name=name, admins=admins, time=now))
                 cur.execute("insert into factory_users (phone, rights, factory, time) values ('%s', '%s', '%s', %d)"
                             ";" % (Id, '{1}', uuid, now))
+                # 将通过审核的公司添加到企业资源池
+                cur.execute("insert into base_clients_pool(name, contacts, phone, industry, create_time, region, "
+                            "address) values('{}', '{}', '{}', '{}', {}, '{}', '');".format(name, contacts, phone, industry,
+                                                                                            now, region))
                 conn.commit()
                 # 发送消息
                 # b'{"resource": "BgExamine", "type": "POST", "params": {"state": "3", "id": "11111111111",

@@ -471,10 +471,11 @@ class FactoryModify(APIView):
             cur.execute(
                 "update factorys set name = '%s', title = '%s', administrators = '{%s}', time = %d where id = '%s';" % (
                     contact, company_name, administrators, timestamp, factory_id))
-            cur.execute("delete from factory_users where factory = '%s' and '1' = ANY(rights);" % factory_id)
+            cur.execute("delete from factory_users where factory = '%s' and phone = '%s';"
+                        % (factory_id, administrators))
             cur.execute(
-                "insert into factory_users (phone, name, rights, time, factory) values ('%s', '%s', '{1}', %d, '%s');" % (
-                    administrators, contact, timestamp, factory_id))
+                "insert into factory_users (phone, name, rights, time, factory) values ('%s', '%s', '{1}', %d, '%s');"
+                % (administrators, contact, timestamp, factory_id))
 
             # 不上传新图片时前端传图片id，上传新图片时传base64转码后内容
             if auth_file:
